@@ -44,9 +44,13 @@ int n = 1;
 
 boolean changestate = 0;
 
+boolean pumpStartDelay = false;
+
 //MILLIS
 unsigned long previousMillis = 0;  // Variable to store the last time the command was executed
-const unsigned long delayTime = 2000;  // Time to delay in milliseconds
+const unsigned long delayTime = 5000;  // Time to delay in milliseconds
+const unsigned long pumpDelayTime = 1000;
+
 
 // Initialize the AccelStepper object with the appropriate pins, steps per revolution, motor speed, and acceleration
 AccelStepper stepper(AccelStepper::FULL4WIRE, STEPPER_PIN_1, STEPPER_PIN_2, STEPPER_PIN_3, STEPPER_PIN_4);
@@ -149,6 +153,24 @@ case LOW:
     stepper.moveTo(fullCircle);
     stepper.setSpeed(MAX_SPEED);
     unsigned long currentMillis = millis();
+    if (currentMillis - previousMillis >= pumpDelayTime && pumpStartDelay == true){
+       //Pump start
+        digitalWrite(in1, HIGH);
+        digitalWrite(in2, LOW);
+
+        //Leds change 
+        // have to check value of n incremented by 1 because of n++ at the and of the loop that is always added
+        if (n==2){
+        inProgressLed1 = 1;
+        }
+        if (n==3){
+        inProgressLed2 = 1;
+        }
+        if (n==4){
+        inProgressLed3 = 1;
+        }
+        pumpStartDelay = false;
+    }
     if (currentMillis - previousMillis >= delayTime){
     //Pump stop
     digitalWrite(in1, LOW);
@@ -159,18 +181,13 @@ case LOW:
     inProgressLed3 = 0;
     stepper.run();
     }
+    
     if (stepper.distanceToGo() == fullCircle - n*stepCircle){
       if (n==1 && buttonState1 == LOW){
         stepper.stop();   
         previousMillis = currentMillis; 
-        //delay(2000);
-        
-        //Pump start
-        digitalWrite(in1, HIGH);
-        digitalWrite(in2, LOW);
-
-        //Leds change 
-        inProgressLed1 = 1;
+        pumpStartDelay = true;
+       
 
         
         
@@ -178,26 +195,14 @@ case LOW:
       if (n==2 && buttonState2 == LOW){    
         stepper.stop();
         previousMillis = currentMillis; 
-        //delay(2000);
-
-        //Pump start
-        digitalWrite(in1, HIGH);
-        digitalWrite(in2, LOW);
-
-         //Leds change 
-        inProgressLed2 = 1;
+        
+        pumpStartDelay = true;
       }
       if (n==3 && buttonState3 == LOW){
         stepper.stop();
-        previousMillis = currentMillis; 
-        //delay(2000);
-
-        //Pump start
-        digitalWrite(in1, HIGH);
-        digitalWrite(in2, LOW);
-
-         //Leds change 
-        inProgressLed3 = 1;
+        previousMillis = currentMillis;
+         
+        pumpStartDelay = true;
       }
       n++;  
     }
