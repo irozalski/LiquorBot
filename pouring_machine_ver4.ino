@@ -26,15 +26,14 @@ const int in3 = 8;
 const int in4 = 7;
 
 //STEPPER
-#define STEPPER_PIN_1 11
-#define STEPPER_PIN_2 10
-#define STEPPER_PIN_3 12
-#define STEPPER_PIN_4 13
+#define DIR_PIN 12
+#define STEP_PIN 11
+#define ENABLE 2
 
 const int STEPS_PER_REVOLUTION = 2048;
 
-const float MAX_SPEED = 300.0;    // steps per second
-const float ACCELERATION = 100.0; 
+const float MAX_SPEED = 1200;    // steps per second
+const float ACCELERATION = 500; 
 
 //BUTTONS
 #define START_BUTTON_PIN A5
@@ -65,8 +64,9 @@ const unsigned long pumpDelayTime1 = 1000; //Start after 1 second and ends after
 const unsigned long pumpDelayTime2 = 4000; //Start after 4 seconds and ends after 6 sec: 2 sec work time
 
 
-// Initialize the AccelStepper object with the appropriate pins, steps per revolution, motor speed, and acceleration
-AccelStepper stepper(AccelStepper::FULL4WIRE, STEPPER_PIN_1, STEPPER_PIN_2, STEPPER_PIN_3, STEPPER_PIN_4);
+// Define a stepper and the pins it will use
+// 1 or AccelStepper::DRIVER means a stepper driver (with Step and Direction pins)
+AccelStepper stepper(1, STEP_PIN, DIR_PIN); //type (1) of stepper motor not the FULL2WIRE- look up to AccelStepper library 
 
 void setup() {
   
@@ -92,7 +92,17 @@ void setup() {
   pinMode(BUTTON_PIN3, INPUT_PULLUP);
   
   stepper.setMaxSpeed(MAX_SPEED);
-  //stepper.setAcceleration(ACCELERATION);
+  stepper.setAcceleration(ACCELERATION);
+  //pinMode(DIR_PIN, OUTPUT);
+  //digitalWrite(DIR_PIN, HIGH);
+  
+  stepper.setEnablePin(ENABLE);
+  
+  //specify that the enable pin is inverted
+  stepper.setPinsInverted(false, false, true);
+  //stepper.enableOutputs();
+  //pinMode(ENABLE, OUTPUT);
+  //setEnablePin(ENABLE);
 
 }
 
@@ -255,6 +265,7 @@ case LOW:
     inProgressLed1 = 0;
     inProgressLed2 = 0;
     inProgressLed3 = 0;
+    stepper.enableOutputs();
     stepper.run();
     }
     
@@ -290,6 +301,7 @@ case LOW:
       stepper.stop();
       //delay(2000);
       changestate = 0;
+      stepper.disableOutputs();
        
     }
   }
