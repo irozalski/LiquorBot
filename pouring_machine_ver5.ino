@@ -28,9 +28,9 @@ const int in4 = 7;
 //STEPPER
 #define DIR_PIN 12
 #define STEP_PIN 11
-#define ENABLE 2
+#define ENABLE 13
 
-const int STEPS_PER_REVOLUTION = 2048;
+//const int STEPS_PER_REVOLUTION = 2048;
 
 const float MAX_SPEED = 1200;    // steps per second
 const float ACCELERATION = 500; 
@@ -41,15 +41,27 @@ const float ACCELERATION = 500;
 #define BUTTON_PIN2 A1
 #define BUTTON_PIN3 A2
 
+int buttonState1 = 0;
+int buttonState2 = 0;
+int buttonState3 = 0;
+
+//Hall sensor
+#define HALL_SENSOR 2
+int hallState;
+int previousHallState = HIGH;
+
 // correct values below
-const int fullCircle = 11580;
-const int stepCircle = 1930;
+//const int fullCircle = 11580;
+//const int stepCircle = 1930;
 // test values below
 //const int fullCircle = 2316;
 //const int stepCircle = 386;
+
+
 int n = 1;
 
 boolean changestate = 0;
+boolean changeDirection = 0;
 
 boolean pumpStartDelay1 = false;
 boolean pumpStartDelay2 = false;
@@ -90,7 +102,8 @@ void setup() {
   pinMode(BUTTON_PIN1, INPUT_PULLUP);
   pinMode(BUTTON_PIN2, INPUT_PULLUP);
   pinMode(BUTTON_PIN3, INPUT_PULLUP);
-  
+
+  //STEPPER
   stepper.setMaxSpeed(MAX_SPEED);
   stepper.setAcceleration(ACCELERATION);
   //pinMode(DIR_PIN, OUTPUT);
@@ -104,14 +117,22 @@ void setup() {
   //pinMode(ENABLE, OUTPUT);
   //setEnablePin(ENABLE);
 
+  //HALL SENSOR
+  pinMode(HALL_SENSOR, INPUT);
+  Serial.begin(9600);
+  
+  
+
 }
 
 void loop() {
   
+  hallState = digitalRead(HALL_SENSOR);
+  Serial.println(hallState);
   
-  int buttonState1 = digitalRead(BUTTON_PIN1);
-  int buttonState2 = digitalRead(BUTTON_PIN2);
-  int buttonState3 = digitalRead(BUTTON_PIN3);
+  buttonState1 = digitalRead(BUTTON_PIN1);
+  buttonState2 = digitalRead(BUTTON_PIN2);
+  buttonState3 = digitalRead(BUTTON_PIN3);
 
   analogWrite (enableA, 255); //Voltage regulation of motorA
   analogWrite (enableB, 255); //Voltage regulation of motorB
@@ -196,8 +217,13 @@ case LOW:
   }
   
   if (changestate == 1) {
-    stepper.moveTo(fullCircle);
+    //stepper.moveTo(fullCircle);
+    if(changeDirection == 0){
     stepper.setSpeed(MAX_SPEED);
+    }
+    else{
+      stepper.setSpeed(-MAX_SPEED);
+    }
     unsigned long currentMillis = millis();
 
     //First pump
@@ -269,7 +295,9 @@ case LOW:
     stepper.run();
     }
     
-    if (stepper.distanceToGo() == fullCircle - n*stepCircle){
+    if (hallState != previousHallState){ // tylko jak zmieni sie z 1 na 0
+      previousHallState = hallState;
+     if (hallState == LOW) {
       if (n==1 && buttonState1 == LOW){
         stepper.stop();   
         previousMillis = currentMillis; 
@@ -296,11 +324,13 @@ case LOW:
       }
       n++;  
     }
+    }
   
-  if (fullCircle - n*stepCircle == 0){
+  if (n == 7){
       stepper.stop();
       //delay(2000);
       changestate = 0;
+      changeDirection = !changeDirection;
       stepper.disableOutputs();
        
     }
