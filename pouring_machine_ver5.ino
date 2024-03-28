@@ -85,7 +85,18 @@ void setup() {
   //LEDs
   strip.begin();
   strip.show();
-  strip.setBrightness(50);
+
+   //start animation
+  led_on(0,6,255,255,255);
+  delay(100);
+  led_on(0,6,0,0,0);
+  delay(200);
+  led_on(0,6,255,255,255);
+  delay(500);
+  fade_in(0, 6);
+  //fade_out(0, 6);
+  
+  //strip.setBrightness(50);
 
   //PUMP A
   pinMode(enableA, OUTPUT);
@@ -351,4 +362,25 @@ void led_off (int x, int y) {
     strip.setPixelColor(i, 255, 0, 0);
     }
     strip.show();
+}
+
+void fade_in (int x, int y) {
+  for(int j = 0; j<255; j++) {
+    for(int i=x; i<y; i++) {
+      strip.setPixelColor(i, j, 0, 0);
+      }
+    strip.show();
+    delay(10);
+  }
+}
+
+
+void fade_out (int x, int y) {
+  for(int j = 255; j>0; j--) {
+    for(int i=x; i<y; i++) {
+      strip.setPixelColor(i, j, j, j);
+      }
+    strip.show();
+    delay(5);
+  }
 }
