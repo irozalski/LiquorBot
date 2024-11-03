@@ -1,7 +1,7 @@
 # 🤖 LiquorBot
 
 ### Automatic liquor dispensing machine  used for pouring several-layer shots.<br> 
-### The project uses a stepper motor, liquid pumps, Hall sensor, capacitive touch sensors and LEDs controlled by the Atmega328P microcontroller. <br>
+### The project uses a stepper motor, liquid pumps, Hall sensor, optocouplers and LEDs controlled by the Esp32 microcontroller. <br>
 ### Most of the case parts were printed on a 3D printer.
 ---
 ## Electronic schematic <br> 
