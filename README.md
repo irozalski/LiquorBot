@@ -8,6 +8,11 @@
 ![LiquorBot schematic](https://github.com/user-attachments/assets/3b4cce25-41d4-408c-8242-f3e39bccc689)
 
 ---
+## PCB 3D visualisation <br> 
+![image](https://github.com/user-attachments/assets/55b30561-93f1-4626-a49d-6e0cf3a0fd65)
+
+---
+
 ## Render of project <br>
 
 ![Pouring_machine_project](https://github.com/lgorro/shots_pouring_machine/assets/115094304/93e39c4a-c4e8-4545-a2ee-3b41bace849d)
